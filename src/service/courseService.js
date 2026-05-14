@@ -1,12 +1,34 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 
 const Course = db.Course;
 const Category = db.Category;
 const Teacher = db.Teacher;
 const Lesson = db.Lesson;
 
-const getAllCourses = async () => {
+const getAllCourses = async (filters = {}) => {
+  const where = {};
+
+  if (filters.title) {
+    where.title = { [Op.like]: `%${filters.title}%` };
+  }
+
+  if (filters.category) {
+    where[Op.or] = [
+      { "$Category.name$": { [Op.like]: `%${filters.category}%` } },
+      { "$Category.slug$": { [Op.like]: `%${filters.category}%` } },
+    ];
+  }
+
+  if (filters.teacher) {
+    where[Op.or] = [
+      ...(where[Op.or] || []),
+      { "$Teacher.name$": { [Op.like]: `%${filters.teacher}%` } },
+    ];
+  }
+
   return await Course.findAll({
+    where,
     include: [Category, Teacher],
     order: [["createdAt", "DESC"]],
   });

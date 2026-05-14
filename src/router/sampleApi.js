@@ -7,31 +7,31 @@ import lessonController from "../controller/lessonController.js";
 const router = express.Router();
 
 const SampleApi = (app) => {
-  router.get("/sample/categories", categoryController.getAllCategories);
-  router.get("/sample/categories/:id", categoryController.getCategoryById);
-  router.post("/sample/categories", categoryController.createCategory);
-  router.put("/sample/categories/:id", categoryController.updateCategory);
-  router.delete("/sample/categories/:id", categoryController.deleteCategory);
+  router.get("/categories", categoryController.getAllCategories);
+  router.get("/categories/:id", categoryController.getCategoryById);
+  router.post("/categories", categoryController.createCategory);
+  router.put("/categories/:id", categoryController.updateCategory);
+  router.delete("/categories/:id", categoryController.deleteCategory);
 
-  router.get("/sample/teachers", teacherController.getAllTeachers);
-  router.get("/sample/teachers/:id", teacherController.getTeacherById);
-  router.post("/sample/teachers", teacherController.createTeacher);
-  router.put("/sample/teachers/:id", teacherController.updateTeacher);
-  router.delete("/sample/teachers/:id", teacherController.deleteTeacher);
+  router.get("/teachers", teacherController.getAllTeachers);
+  router.get("/teachers/:id", teacherController.getTeacherById);
+  router.post("/teachers", teacherController.createTeacher);
+  router.put("/teachers/:id", teacherController.updateTeacher);
+  router.delete("/teachers/:id", teacherController.deleteTeacher);
 
-  router.get("/sample/courses", courseController.getAllCourses);
-  router.get("/sample/courses/:id", courseController.getCourseById);
-  router.post("/sample/courses", courseController.createCourse);
-  router.put("/sample/courses/:id", courseController.updateCourse);
-  router.delete("/sample/courses/:id", courseController.deleteCourse);
+  router.get("/courses", courseController.getAllCourses);
+  router.get("/courses/:id", courseController.getCourseById);
+  router.post("/courses", courseController.createCourse);
+  router.put("/courses/:id", courseController.updateCourse);
+  router.delete("/courses/:id", courseController.deleteCourse);
 
-  router.get("/sample/lessons", lessonController.getAllLessons);
-  router.get("/sample/lessons/:id", lessonController.getLessonById);
-  router.post("/sample/lessons", lessonController.createLesson);
-  router.put("/sample/lessons/:id", lessonController.updateLesson);
-  router.delete("/sample/lessons/:id", lessonController.deleteLesson);
+  router.get("/lessons", lessonController.getAllLessons);
+  router.get("/lessons/:id", lessonController.getLessonById);
+  router.post("/lessons", lessonController.createLesson);
+  router.put("/lessons/:id", lessonController.updateLesson);
+  router.delete("/lessons/:id", lessonController.deleteLesson);
 
-  return app.use("/api", router);
+  return app.use("/api/v1", router);
 };
 
 export default SampleApi;

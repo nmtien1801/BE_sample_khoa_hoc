@@ -1,9 +1,20 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 
 const Lesson = db.Lesson;
 
-const getAllLessons = async () => {
-  return await Lesson.findAll({ order: [["order", "ASC"]] });
+const getAllLessons = async (filters = {}) => {
+  const where = {};
+
+  if (filters.courseId) {
+    where.courseId = filters.courseId;
+  }
+
+  if (filters.title) {
+    where.title = { [Op.like]: `%${filters.title}%` };
+  }
+
+  return await Lesson.findAll({ where, order: [["order", "ASC"]] });
 };
 
 const getLessonById = async (id) => {
