@@ -2,42 +2,33 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert(
-      "Category",
-      [
-        {
-          name: "Combo LiveStream",
-          icon: "fas fa-laptop",
-          status: true,
-          parentId: null, // Root category
-
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          name: "Phụ kiện thu âm",
-          icon: "fas fa-tshirt",
-          status: true,
-          parentId: null, // Root category
-
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          name: "Loa kiểm âm",
-          icon: "fas fa-book",
-          status: true,
-          parentId: null, // Root category
-
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ],
-      {},
-    );
+    await queryInterface.bulkInsert("Categories", [
+      {
+        name: "Công nghệ thông tin",
+        slug: "cong-nghe-thong-tin",
+        description:
+          "Các khóa học về lập trình, phát triển phần mềm và công nghệ thông tin",
+        type: "technology",
+        parentId: null,
+        icon: "💻",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Kinh doanh khởi nghiệp",
+        slug: "kinh-doanh-khoi-nghiep",
+        description:
+          "Kiến thức về khởi nghiệp, quản lý doanh nghiệp và phát triển kinh doanh",
+        type: "business",
+        parentId: null,
+        icon: "💼",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]);
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete("Category", null, {});
+    await queryInterface.bulkDelete("Categories", null, {});
   },
 };

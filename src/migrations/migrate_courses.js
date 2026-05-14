@@ -67,3 +67,5 @@ module.exports = {
     await queryInterface.dropTable("Course");
   },
 };
+
+// npx sequelize-cli db:migrate --to migrate_courses.js

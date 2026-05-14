@@ -2,30 +2,27 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert(
-      "User",
-      [
-        {
-          userName: "Nguyen Thanh Thao",
-          email: "admin@gmail.com",
-          password:
-            "$2a$10$zHwMBVyL3Cbwq8hfEFryJeVaUW45Dxs.KuLUKWf9DAMtTJzp3m5vK", // 1234
-          image: "https://via.placeholder.com/150",
-          phone: "0967273063",
-          address: "123 Main St, City, Country",
-          role: "admin",
-
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ],
-      {},
-    );
+    await queryInterface.bulkInsert("Users", [
+      {
+        email: "admin@example.com",
+        password: "$2a$10$hashedpassword1", // bcrypt hash for "password123"
+        name: "Admin User",
+        role: "admin",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        email: "user@example.com",
+        password: "$2a$10$hashedpassword2", // bcrypt hash for "password123"
+        name: "Regular User",
+        role: "user",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]);
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete("User", null, {});
+    await queryInterface.bulkDelete("Users", null, {});
   },
 };
-
-// npx sequelize-cli db:seed --seed seeder_user.js
