@@ -6,16 +6,7 @@ const path = require("path");
 
 // Routers
 import authApi from "./router/authApi";
-import ApiStaff from "./router/staffApi";
-import ApiProduct from "./router/productApi";
-import ApiCategory from "./router/categoryApi";
-import ApiProductCategory from "./router/productCategoryApi";
-import ApiUPload from "./router/fileApi";
-import ApiPost from "./router/postApi";
-import ApiRecruitment from "./router/recruitmentApi";
-import ApiContact from "./router/contactApi";
-import ApiProductImage from "./router/productImageApi";
-import UserCutVideoRoutes from "./router/userCutVideoApi";
+// import ApiUPload from "./router/fileApi";
 import SampleApi from "./router/sampleApi";
 // const corsMiddleware = require("./config/cors");
 
@@ -31,16 +22,7 @@ app.use("/api/upload", express.static(path.join(__dirname, "..", "upload")));
 // connectDB();
 
 authApi(app);
-ApiStaff(app);
-ApiProduct(app);
-ApiCategory(app);
-ApiProductCategory(app);
-ApiUPload(app);
-ApiPost(app);
-ApiRecruitment(app);
-ApiContact(app);
-ApiProductImage(app);
-UserCutVideoRoutes(app);
+// ApiUPload(app);
 SampleApi(app);
 
 const PORT = process.env.PORT || 8080;

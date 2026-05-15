@@ -29,7 +29,13 @@ const getAllCourses = async (filters = {}) => {
 
   return await Course.findAll({
     where,
-    include: [Category, Teacher],
+    include: [
+      Category,
+      Teacher,
+      {
+        model: Lesson,
+      },
+    ],
     order: [["createdAt", "DESC"]],
   });
 };

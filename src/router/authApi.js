@@ -6,7 +6,7 @@ const router = express.Router();
 
 const AuthRoutes = (app) => {
   // middleware
-  router.use(checkUserJwt);
+  // router.use(checkUserJwt);
 
   //rest api - dùng web sử dụng các method (CRUD)
   //GET(R), POST (C), PUT (U), DELETE (D)
