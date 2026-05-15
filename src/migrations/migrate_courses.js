@@ -47,9 +47,6 @@ module.exports = {
       tags: {
         type: Sequelize.JSON,
       },
-      curriculum: {
-        type: Sequelize.JSON,
-      },
       featured: {
         type: Sequelize.BOOLEAN,
       },

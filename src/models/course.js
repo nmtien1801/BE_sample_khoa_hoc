@@ -23,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
       image: DataTypes.STRING,
       status: DataTypes.STRING,
       tags: DataTypes.JSON,
-      curriculum: DataTypes.JSON,
       featured: DataTypes.BOOLEAN,
     },
     {
