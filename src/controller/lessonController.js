@@ -1,5 +1,14 @@
 import lessonService from "../service/lessonService.js";
 
+const sanitizeLessonData = (lesson, isAdmin = false) => {
+  if (!lesson) return lesson;
+  const plain = lesson.get ? lesson.get({ plain: true }) : { ...lesson };
+  if (isAdmin) return plain;
+
+  const { videoId, videoUrl, ...safelesson } = plain;
+  return safelesson;
+};
+
 const getAllLessons = async (req, res) => {
   try {
     const filters = {
@@ -7,7 +16,8 @@ const getAllLessons = async (req, res) => {
       title: req.query.title,
     };
     const lessons = await lessonService.getAllLessons(filters);
-    res.json({ data: lessons, total: lessons.length });
+    const sanitizedLessons = lessons.map((lesson) => sanitizeLessonData(lesson, req.user?.role === "admin"));
+    res.json({ data: sanitizedLessons, total: sanitizedLessons.length });
   } catch (error) {
     console.error("lessonController getAllLessons", error);
     res.status(500).json({ message: "Internal server error", error, data: [] });
@@ -19,7 +29,7 @@ const getLessonById = async (req, res) => {
     const lesson = await lessonService.getLessonById(req.params.id);
     if (!lesson)
       return res.status(404).json({ message: "Lesson not found", data: null });
-    res.json({ data: lesson });
+    res.json({ data: sanitizeLessonData(lesson, req.user?.role === "admin") });
   } catch (error) {
     console.error("lessonController getLessonById", error);
     res.status(500).json({ message: "Internal server error", data: null });

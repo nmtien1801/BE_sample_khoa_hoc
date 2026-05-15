@@ -22,7 +22,7 @@ const AuthRoutes = (app) => {
   router.post("/auth/create-user", authController.createUser);
   router.put("/auth/update-user/:id", authController.updateUser);
   router.delete("/auth/delete-user/:id", authController.deleteUser);
-  return app.use("/api", router);
+  return app.use("/api/v1", router);
 };
 
 export default AuthRoutes;
