@@ -61,9 +61,9 @@ const getCoursesByUserId = async (userId) => {
         model: Course,
         as: "course", // Tên alias phải khớp với định nghĩa trong Order.belongsTo(models.Course, { as: "course" })
         include: [
-          Category, 
-          Teacher, 
-          { model: Lesson } // Include kèm Lesson để Controller có dữ liệu xử lý sanitizeLessonData
+          Category,
+          Teacher,
+          { model: Lesson }, // Include kèm Lesson để Controller có dữ liệu xử lý sanitizeLessonData
         ],
       },
     ],
@@ -101,6 +101,34 @@ const deleteCourse = async (id) => {
   return course;
 };
 
+const getAllAdminCourses = async (filters = {}) => {
+  const where = {};
+
+  if (filters.title) {
+    where.title = { [Op.like]: `%${filters.title}%` };
+  }
+
+  if (filters.category) {
+    where[Op.or] = [
+      { "$Category.name$": { [Op.like]: `%${filters.category}%` } },
+      { "$Category.slug$": { [Op.like]: `%${filters.category}%` } },
+    ];
+  }
+
+  if (filters.teacher) {
+    where[Op.or] = [
+      ...(where[Op.or] || []),
+      { "$Teacher.name$": { [Op.like]: `%${filters.teacher}%` } },
+    ];
+  }
+
+  return await Course.findAll({
+    where,
+    include: [Category, Teacher, Lesson],
+    order: [["createdAt", "DESC"]],
+  });
+};
+
 export default {
   getAllCourses,
   getCoursesByUserId,
@@ -108,4 +136,5 @@ export default {
   createCourse,
   updateCourse,
   deleteCourse,
+  getAllAdminCourses,
 };

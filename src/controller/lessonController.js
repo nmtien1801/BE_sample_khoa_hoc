@@ -73,10 +73,25 @@ const deleteLesson = async (req, res) => {
   }
 };
 
+const getAllAdminLessons = async (req, res) => {
+  try {
+    const filters = {
+      courseId: req.query.courseId,
+      title: req.query.title,
+    };
+    const lessons = await lessonService.getAllAdminLessons(filters);
+    res.json({ data: lessons, total: lessons.length });
+  } catch (error) {
+    console.error("lessonController getAllAdminLessons", error);
+    res.status(500).json({ message: "Internal server error", error, data: [] });
+  }
+};
+
 export default {
   getAllLessons,
   getLessonById,
   createLesson,
   updateLesson,
   deleteLesson,
+  getAllAdminLessons,
 };

@@ -110,7 +110,23 @@ const deleteCourse = async (req, res) => {
   }
 };
 
+const getAllAdminCourses = async (req, res) => {
+  try {
+    const filters = {
+      category: req.query.category,
+      teacher: req.query.teacher,
+      title: req.query.title,
+    };
+    const courses = await courseService.getAllAdminCourses(filters);
+    res.json({ data: courses, total: courses.length });
+  } catch (error) {
+    console.error("courseController getAllCourses Admin", error);
+    res.status(500).json({ message: "Internal server error", error, data: [] });
+  }
+};
+
 export default {
+  getAllAdminCourses,
   getAllCourses,
   getCoursesByUserId,
   getCourseById,

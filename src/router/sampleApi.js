@@ -151,7 +151,20 @@ router.get("/video/watch/:token", async (req, res) => {
         );
     }
 
-    const embedUrl = `https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&iv_load_policy=3`;
+    // SỬA TẠI BACKEND: Thêm tham số controls, modestbranding, rel và tinh chỉnh để ẩn nút thừa
+    const embedUrl =
+      `https://www.youtube.com/embed/${youtubeId}?` +
+      new URLSearchParams({
+        autoplay: "1",
+        controls: "1",
+        rel: "0", // ẩn video liên quan
+        modestbranding: "1", // giảm logo YouTube
+        iv_load_policy: "3", // tắt annotations
+        showinfo: "0", // ẩn title (deprecated nhưng vẫn có tác dụng)
+        fs: "0", // ẩn nút fullscreen
+        disablekb: "1", // tắt keyboard shortcuts
+        cc_load_policy: "0", // tắt subtitles mặc định
+      }).toString();
 
     // 4. Trả HTML — YouTube ID chỉ tồn tại trong server-side response này
     res.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -171,12 +184,30 @@ router.get("/video/watch/:token", async (req, res) => {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Protected Video</title>
-  <style>
-    html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
-    iframe { border: 0; width: 100%; height: 100%; display: block; }
-  </style>
+ <style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; position: relative; }
+  iframe { border: 0; width: 100%; height: 100%; display: block; }
+  /* Che nút Share và Watch Later góc dưới trái */
+  .overlay-bl {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 160px; height: 60px;
+    background: #000;
+    z-index: 10;
+  }
+  /* Che nút "Video khác" + logo YouTube góc dưới phải */
+  .overlay-br {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 330px; height: 60px;
+    background: #000;
+    z-index: 10;
+  }
+</style>
 </head>
 <body>
+  <div class="overlay-bl"></div>
+  <div class="overlay-br"></div>
   <iframe
     src="${embedUrl}"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -281,12 +312,14 @@ const SampleApi = (app) => {
   router.post("/courses", courseController.createCourse);
   router.put("/courses/:id", courseController.updateCourse);
   router.delete("/courses/:id", courseController.deleteCourse);
+  router.get("/admin/courses", courseController.getAllAdminCourses);
 
   router.get("/lessons", lessonController.getAllLessons);
   router.get("/lessons/:id", lessonController.getLessonById);
   router.post("/lessons", lessonController.createLesson);
   router.put("/lessons/:id", lessonController.updateLesson);
   router.delete("/lessons/:id", lessonController.deleteLesson);
+  router.get("/admin/lessons", lessonController.getAllAdminLessons);
 
   return app.use("/api/v1", router);
 };

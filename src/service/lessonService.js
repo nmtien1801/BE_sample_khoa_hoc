@@ -38,10 +38,25 @@ const deleteLesson = async (id) => {
   return lesson;
 };
 
+const getAllAdminLessons = async (filters = {}) => {
+  const where = {};
+
+  if (filters.courseId) {
+    where.courseId = filters.courseId;
+  }
+
+  if (filters.title) {
+    where.title = { [Op.like]: `%${filters.title}%` };
+  }
+
+  return await Lesson.findAll({ where, order: [["order", "ASC"]] });
+};
+
 export default {
   getAllLessons,
   getLessonById,
   createLesson,
   updateLesson,
   deleteLesson,
+  getAllAdminLessons,
 };
