@@ -40,12 +40,11 @@ const isValidYoutubeId = (id) => /^[A-Za-z0-9_-]{11}$/.test(id ?? "");
 // ─────────────────────────────────────────────────────────────────────────────
 router.post("/video/token", checkUserJwt, async (req, res) => {
   try {
-     console.log("DB sssssssssss  :", Object.keys(db)); 
     const { lessonId } = req.body;
     const userId = req.user?.id;
 
     if (!lessonId) {
-      return res.status(400).json({ EC: -1, EM: "Thiếu lessonId" });
+      return res.status(500).json({ EC: -1, EM: "Thiếu lessonId" });
     }
 
     // 1. Tìm lesson — chỉ lấy field cần thiết, không select videoUrl ra ngoài scope này
@@ -54,12 +53,12 @@ router.post("/video/token", checkUserJwt, async (req, res) => {
     });
 
     if (!lesson) {
-      return res.status(404).json({ EC: -1, EM: "Không tìm thấy bài học" });
+      return res.status(500).json({ EC: -1, EM: "Không tìm thấy bài học" });
     }
 
     // Kiểm tra lesson có video không trước khi cấp token
     if (!lesson.videoUrl) {
-      return res.status(422).json({ EC: -1, EM: "Bài học này chưa có video" });
+      return res.status(500).json({ EC: -1, EM: "Bài học này chưa có video" });
     }
 
     // 2. Kiểm tra user đã mua khóa học chưa — dùng `Order`/`Payment`
@@ -94,7 +93,7 @@ router.post("/video/token", checkUserJwt, async (req, res) => {
     }
 
     if (!hasPurchased) {
-      return res.status(403).json({ EC: -1, EM: "Bạn chưa mua khóa học này" });
+      return res.status(500).json({ EC: -1, EM: "Bạn chưa mua khóa học này" });
     }
 
     // 3. Ký token — payload gọn, KHÔNG chứa URL video
@@ -137,7 +136,7 @@ router.get("/video/watch/:token", async (req, res) => {
 
     if (!lesson?.videoUrl) {
       return res
-        .status(404)
+        .status(500)
         .send(renderErrorHtml("Không tìm thấy video bài học này."));
     }
 
@@ -161,7 +160,10 @@ router.get("/video/watch/:token", async (req, res) => {
       "no-store, no-cache, must-revalidate, proxy-revalidate",
     );
     res.setHeader("X-Frame-Options", "SAMEORIGIN");
-    res.setHeader("Content-Security-Policy", "frame-ancestors 'self'");
+    res.setHeader(
+      "Content-Security-Policy",
+      "frame-ancestors 'self' http://localhost:5173",
+    );
 
     return res.send(`<!DOCTYPE html>
 <html lang="vi">
@@ -274,6 +276,7 @@ const SampleApi = (app) => {
   router.delete("/teachers/:id", teacherController.deleteTeacher);
 
   router.get("/courses", courseController.getAllCourses);
+  router.get("/courseByUser/:userId", courseController.getCoursesByUserId);
   router.get("/courses/:id", courseController.getCourseById);
   router.post("/courses", courseController.createCourse);
   router.put("/courses/:id", courseController.updateCourse);

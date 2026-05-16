@@ -9,10 +9,10 @@ module.exports = (sequelize, DataTypes) => {
           as: "user",
         });
       }
-      if (models.Product) {
-        Order.belongsTo(models.Product, {
+      if (models.Course) {
+        Order.belongsTo(models.Course, {
           foreignKey: "courseId",
-          as: "product",
+          as: "course",
         });
       }
     }

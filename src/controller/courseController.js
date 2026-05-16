@@ -37,6 +37,33 @@ const getAllCourses = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// BỔ SUNG: Lấy danh sách khóa học user đã mua thành công
+// API này thường chạy qua middleware checkUserJwt để lấy req.user.id,
+// hoặc lấy userId trực tiếp từ URL params (req.params.userId) tùy bạn cấu hình.
+// ─────────────────────────────────────────────────────────────────────────────
+const getCoursesByUserId = async (req, res) => {
+  try {
+    // Ưu tiên lấy từ req.user.id (do middleware JWT giải mã) hoặc từ URL params
+    const userId = req.user?.id || req.params.userId;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Missing userId" });
+    }
+
+    // Gọi xuống service để xử lý câu lệnh tìm kiếm/join bảng Order
+    const courses = await courseService.getCoursesByUserId(userId);
+
+    // Đưa qua hàm sanitize dữ liệu để xóa videoUrl bảo mật
+    const sanitizedCourses = courses.map(sanitizeCourseData);
+
+    res.json({ data: sanitizedCourses, total: sanitizedCourses.length });
+  } catch (error) {
+    console.error("courseController getCoursesByUserId", error);
+    res.status(500).json({ message: "Internal server error", data: [] });
+  }
+};
+
 const getCourseById = async (req, res) => {
   try {
     const course = await courseService.getCourseById(req.params.id);
@@ -85,6 +112,7 @@ const deleteCourse = async (req, res) => {
 
 export default {
   getAllCourses,
+  getCoursesByUserId,
   getCourseById,
   createCourse,
   updateCourse,
