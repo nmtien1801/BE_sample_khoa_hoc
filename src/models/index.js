@@ -23,6 +23,8 @@ const modelDefiners = [
   require("./teacher"),
   require("./course"),
   require("./lesson"),
+  require("./order"),
+  require("./payment"),
 ];
 
 for (const defineModel of modelDefiners) {

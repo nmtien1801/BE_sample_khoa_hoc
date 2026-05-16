@@ -1,12 +1,15 @@
 import lessonService from "../service/lessonService.js";
 
-const sanitizeLessonData = (lesson, isAdmin = false) => {
+// ─────────────────────────────────────────────────────────────────────────────
+// Bảo mật: Xoá hoàn toàn videoUrl khỏi mọi response trả về Frontend.
+// Frontend dùng lessonId để xin Signed Token qua POST /api/v1/video/token.
+// ─────────────────────────────────────────────────────────────────────────────
+const sanitizeLessonData = (lesson) => {
   if (!lesson) return lesson;
   const plain = lesson.get ? lesson.get({ plain: true }) : { ...lesson };
-  if (isAdmin) return plain;
-
-  const { videoId, videoUrl, ...safelesson } = plain;
-  return safelesson;
+  // Xoá videoUrl — không để lộ link YouTube dưới bất kỳ hình thức nào
+  const { videoUrl, ...safeLesson } = plain;
+  return safeLesson;
 };
 
 const getAllLessons = async (req, res) => {
@@ -16,7 +19,7 @@ const getAllLessons = async (req, res) => {
       title: req.query.title,
     };
     const lessons = await lessonService.getAllLessons(filters);
-    const sanitizedLessons = lessons.map((lesson) => sanitizeLessonData(lesson, req.user?.role === "admin"));
+    const sanitizedLessons = lessons.map(sanitizeLessonData);
     res.json({ data: sanitizedLessons, total: sanitizedLessons.length });
   } catch (error) {
     console.error("lessonController getAllLessons", error);
@@ -29,7 +32,7 @@ const getLessonById = async (req, res) => {
     const lesson = await lessonService.getLessonById(req.params.id);
     if (!lesson)
       return res.status(404).json({ message: "Lesson not found", data: null });
-    res.json({ data: sanitizeLessonData(lesson, req.user?.role === "admin") });
+    res.json({ data: sanitizeLessonData(lesson) });
   } catch (error) {
     console.error("lessonController getLessonById", error);
     res.status(500).json({ message: "Internal server error", data: null });

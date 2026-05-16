@@ -117,6 +117,42 @@ const handleLogin = async (rawData) => {
         role: user.role,
         address: user.address,
         image: user.image,
+        // Thêm danh sách courseId đã mua để FE dễ dàng kiểm tra quyền truy cập
+        purchasedCourseIds: await (async () => {
+          try {
+            const purchasedFromOrders =
+              (await db.Order.findAll({
+                where: { userId: user.id, status: "completed" },
+                attributes: ["courseId"],
+              })) || [];
+
+            const idsFromOrders = purchasedFromOrders
+              .map((o) => o.courseId)
+              .filter(Boolean);
+
+            const payments =
+              (await db.Payment.findAll({
+                where: { status: "success" },
+                include: [
+                  {
+                    model: db.Order,
+                    as: "order",
+                    where: { userId: user.id },
+                    attributes: ["courseId"],
+                  },
+                ],
+              })) || [];
+
+            const idsFromPayments = payments
+              .map((p) => p.order && p.order.courseId)
+              .filter(Boolean);
+
+            return Array.from(new Set([...idsFromOrders, ...idsFromPayments]));
+          } catch (e) {
+            console.error("Error fetching purchasedCourseIds:", e);
+            return [];
+          }
+        })(),
       },
     };
   } catch (error) {
@@ -206,7 +242,7 @@ const getListUser = async (query = {}) => {
   }
 };
 
-const createUser = async (rawData) => {  
+const createUser = async (rawData) => {
   try {
     if (rawData.email) {
       const isEmailExists = await checkEmailExists(rawData.email);

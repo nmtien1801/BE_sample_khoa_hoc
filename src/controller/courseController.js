@@ -1,27 +1,23 @@
 import courseService from "../service/courseService.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Bảo mật: Xoá hoàn toàn videoUrl và videoId khỏi response trả về Frontend.
-// Frontend sẽ dùng lessonId để xin Signed Token riêng qua POST /video/token.
+// Bảo mật: Xoá hoàn toàn videoUrl khỏi mọi response trả về Frontend.
+// Frontend dùng lessonId để xin Signed Token qua POST /api/v1/video/token.
 // ─────────────────────────────────────────────────────────────────────────────
 const sanitizeLessonData = (lesson) => {
   if (!lesson) return lesson;
   const plain = lesson.get ? lesson.get({ plain: true }) : { ...lesson };
-
-  // Xoá hoàn toàn videoId và videoUrl — không trả về bất kỳ thông tin video nào
-  const { videoId, videoUrl, ...safelesson } = plain;
-
-  return safelesson;
+  // Xoá videoUrl — không để lộ link YouTube dưới bất kỳ hình thức nào
+  const { videoUrl, ...safeLesson } = plain;
+  return safeLesson;
 };
 
-const sanitizeCourseData = (course, isAdmin = false) => {
+const sanitizeCourseData = (course) => {
   if (!course) return course;
   const plain = course.get ? course.get({ plain: true }) : { ...course };
   return {
     ...plain,
-    Lessons: plain.Lessons
-      ? plain.Lessons.map((lesson) => sanitizeLessonData(lesson, isAdmin))
-      : [],
+    Lessons: plain.Lessons ? plain.Lessons.map(sanitizeLessonData) : [],
   };
 };
 
@@ -33,9 +29,7 @@ const getAllCourses = async (req, res) => {
       title: req.query.title,
     };
     const courses = await courseService.getAllCourses(filters);
-    const sanitizedCourses = courses.map((course) =>
-      sanitizeCourseData(course, req.user?.role === "admin"),
-    );
+    const sanitizedCourses = courses.map(sanitizeCourseData);
     res.json({ data: sanitizedCourses, total: sanitizedCourses.length });
   } catch (error) {
     console.error("courseController getAllCourses", error);
@@ -48,7 +42,7 @@ const getCourseById = async (req, res) => {
     const course = await courseService.getCourseById(req.params.id);
     if (!course)
       return res.status(404).json({ message: "Course not found", data: null });
-    res.json({ data: sanitizeCourseData(course, req.user?.role === "admin") });
+    res.json({ data: sanitizeCourseData(course) });
   } catch (error) {
     console.error("courseController getCourseById", error);
     res.status(500).json({ message: "Internal server error", data: null });
